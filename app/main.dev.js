@@ -15,6 +15,9 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 
+// Disable Security warnings.
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
+
 export default class AppUpdater {
   constructor() {
     log.transports.file.level = 'info';
@@ -69,6 +72,11 @@ app.on('ready', async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
+    transparent: false,
+    webPreferences: {
+      nodeIntegration: true,
+      allowDisplayingInsecureContent: true
+    },
     width: 1024,
     height: 728
   });

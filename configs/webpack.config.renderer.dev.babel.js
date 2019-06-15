@@ -15,6 +15,7 @@ import merge from 'webpack-merge';
 import { spawn, execSync } from 'child_process';
 import baseConfig from './webpack.config.base';
 import CheckNodeEnv from '../internals/scripts/CheckNodeEnv';
+import { dependencies } from '../package.json';
 
 CheckNodeEnv('development');
 
@@ -38,19 +39,14 @@ if (!requiredByDLLConfig && !(fs.existsSync(dll) && fs.existsSync(manifest))) {
   execSync('yarn build-dll');
 }
 
-export default merge.smart(baseConfig, {
-  devtool: 'inline-source-map',
+const config = merge.smart(baseConfig, {
+  devtool: 'cheap-module-eval-source-map',
 
   mode: 'development',
 
   target: 'electron-renderer',
 
-  entry: [
-    ...(process.env.PLAIN_HMR ? [] : ['react-hot-loader/patch']),
-    `webpack-dev-server/client?http://localhost:${port}/`,
-    'webpack/hot/only-dev-server',
-    require.resolve('../app/index')
-  ],
+  entry: path.join(__dirname, '..', 'app/index'),
 
   resolve: {
     alias: { 'react-dom': '@hot-loader/react-dom' }
@@ -277,3 +273,9 @@ export default merge.smart(baseConfig, {
     }
   }
 });
+
+let deps = Object.keys(dependencies || {});
+deps = deps.filter(value => value !== 'react-dom');
+config.externals = [...deps];
+
+export default config;
