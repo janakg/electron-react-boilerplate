@@ -25,12 +25,11 @@ const devConfig = merge.smart(baseConfig, {
 
   target: 'web',
 
-  entry: [
-    'react-hot-loader/patch',
-    `webpack-dev-server/client?http://localhost:${port}/`,
-    'webpack/hot/only-dev-server',
-    require.resolve('../app/index')
-  ],
+  entry: path.join(__dirname, '..', 'app/index'),
+
+  resolve: {
+    alias: { 'react-dom': '@hot-loader/react-dom' }
+  },
 
   output: {
     path: path.join(__dirname, '..', 'web/dist'),
@@ -218,7 +217,7 @@ const devConfig = merge.smart(baseConfig, {
     publicPath,
     compress: true,
     noInfo: false,
-    stats: 'errors-only',
+    // stats: 'errors-only',
     inline: true,
     lazy: false,
     hot: true,
